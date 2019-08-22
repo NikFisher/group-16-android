@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DIT341 Template</string>
+    <string name="btn_new_activity">New Activity</string>
+    <string name="btn_get_http">Get Camels</string>
+</resources>
