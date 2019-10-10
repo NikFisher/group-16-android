@@ -1,8 +1,11 @@
 package se.chalmers.cse.dit341.group00;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,7 +35,21 @@ public class MainActivity extends AppCompatActivity {
         myPlayerImage.setImageResource(R.drawable.janitor);
         setPlayerInfo();
 
+        //button to go to battlefield
+        Button bossButton = (Button) findViewById(R.id.boss_btn);
+        bossButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openBattlefield();
+            }
+        });
     }
+        public void openBattlefield(){
+            Intent intent = new Intent(this, SecondActivity.class);
+            startActivity(intent);
+        }
+
+
 
     public void setPlayerInfo (){
         final TextView myPlayerName = findViewById(R.id.playerNameTextView);
