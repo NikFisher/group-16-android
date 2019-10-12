@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -30,6 +31,10 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
+        setPlayer();
+        setBoss();
+
+
 
         setPlayer();
         setBoss();
@@ -49,9 +54,11 @@ public class SecondActivity extends AppCompatActivity {
             attackButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                             updateHealth(players[0],bosses[0]);
-                        //updatePlayerHealth();
+
+                                if (players[0].health == 0 || bosses[0].health == 0){
+                                    attackButton.setEnabled(false);
+                                }
                 }
             });
         }
@@ -59,11 +66,26 @@ public class SecondActivity extends AppCompatActivity {
             //TextView to show HP
             TextView playerHealth = findViewById(R.id.textView12);
             TextView bossHealth = findViewById(R.id.textView14);
+            TextView win = findViewById(R.id.textView15);
 
 
            //-----Update Player and Boss---------//
             player.health = player.health - boss.damage;
-            boss.health = boss.health - player.damage;
+            boss.health = boss.health - (player.damage+500);
+
+            if(boss.health == 0 || boss.health < 0){
+               String victory = "You Won";
+                win.setText(victory);
+                boss.health = 0;
+                deleteBoss();
+
+            }
+            else if (player.health == 0 || player.health< 0) {
+                win.setText("You Lost");
+                player.health = 0;
+            }
+
+
 
             //-----Set values to Textview---------//
             bossHealth.setText(Integer.toString(boss.health));
@@ -73,8 +95,8 @@ public class SecondActivity extends AppCompatActivity {
             player.setHealth(player.health);
             boss.setHealth(boss.health);
 
-
         }
+
 
         public void goToHome(){
             Intent intent = new Intent(this,MainActivity.class);
@@ -126,6 +148,8 @@ public class SecondActivity extends AppCompatActivity {
 
        public void setBoss(){
             TextView bossHealth = findViewById(R.id.textView14);
+           ImageView bossImage = (ImageView) findViewById(R.id.playerImageView);
+           TextView bossName = (TextView) findViewById(R.id.boss_banner);
             String url = getString(R.string.server_url) + "/api/bosses";
 
             RequestQueue queue = Volley.newRequestQueue(this);
@@ -153,6 +177,21 @@ public class SecondActivity extends AppCompatActivity {
                             bossHealth.setText(Integer.toString(bosses[0].health));
 
 
+
+                          if(bosses[0].health == 300) {
+                              bossImage.setImageResource(R.drawable.bacteria);
+                              bossName.setText(bosses[0].name);
+                          }
+
+                            else if (bosses[0].health== 200){
+                             bossImage.setImageResource(R.drawable.garbage_man);
+                              bossName.setText(bosses[0].name);
+                                }
+                           else if (bosses[0].health==400){
+                                bossImage.setImageResource(R.drawable.building);
+                              bossName.setText(bosses[0].name);
+                            }
+
                         }
                     }, new Response.ErrorListener() {
 
@@ -166,9 +205,50 @@ public class SecondActivity extends AppCompatActivity {
             queue.add(jsonObjectRequest);
         }
 
+        public void deleteBoss(){
+            String url = getString(R.string.server_url) + "/api/bosses/5da1c38859f1d74e1087b979";
+
+            RequestQueue queue = Volley.newRequestQueue(this);
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                            Gson gson = new Gson();
+
+                            String dataArray = null;
 
 
+                            try {
+                                dataArray = response.getString("Boss");
+
+                            } catch (JSONException e) {
+                                Log.e(this.getClass().toString(), e.getMessage());
+                            }
+
+
+                            Boss[] bosses = gson.fromJson(dataArray, Boss[].class);
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+            // The request queue makes sure that HTTP requests are processed in the right order.
+            queue.add(jsonObjectRequest);
+        }
 }
+
+
+
+
+
+
 
 
 
