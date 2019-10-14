@@ -43,10 +43,22 @@ public class MainActivity extends AppCompatActivity {
                 openBattlefield();
             }
         });
+
+        Button shopButton = (Button) findViewById(R.id.shop_button);
+        shopButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                openShop();
+            }
+        });
     }
         public void openBattlefield(){
             Intent intent = new Intent(this, SecondActivity.class);
             startActivity(intent);
+        }
+        public void openShop(){
+            Intent shopIntent = new Intent(this, ShopActivity.class);
+            startActivity(shopIntent);
         }
 
 
