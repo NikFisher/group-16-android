@@ -1,12 +1,11 @@
 package se.chalmers.cse.dit341.group00;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import se.chalmers.cse.dit341.group00.model.Player;
+
 
 public class MainActivity extends AppCompatActivity {
 
