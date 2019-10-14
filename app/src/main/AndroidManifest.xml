@@ -21,6 +21,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="se.chalmers.cse.dit341.group00.TaskActivity"
+            android:parentActivityName="se.chalmers.cse.dit341.group00.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="se.chalmers.cse.dit341.group00.MainActivity" />
+        </activity>
         <activity android:name="se.chalmers.cse.dit341.group00.SecondActivity"
             android:parentActivityName="se.chalmers.cse.dit341.group00.MainActivity">
             <meta-data

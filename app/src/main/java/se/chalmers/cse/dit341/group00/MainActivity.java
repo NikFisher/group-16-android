@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Field for parameter name
     public static final String HTTP_PARAM = "httpResponse";
+    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
                         Player[] players = gson.fromJson(dataArray, Player[].class);
 
-                        String playerDefense = Integer.toString(players[0].defense);
-
                         myPlayerName.setText(players[0].name);
                         myPlayerDefense.setText(Integer.toString(players[0].defense));
                         myPlayerHealth.setText(Integer.toString(players[0].health));
@@ -103,5 +103,15 @@ public class MainActivity extends AppCompatActivity {
                 });
         // The request queue makes sure that HTTP requests are processed in the right order.
         queue.add(jsonObjectRequest);
+    }
+
+    public void launchTaskActivity (View view){
+
+        TextView myPlayerCurrency = findViewById(R.id.playerCurrencyTextView);
+        Intent intent = new Intent(this, TaskActivity.class);
+        intent.putExtra(HTTP_PARAM, myPlayerCurrency.getText().toString());
+        startActivity(intent);
+
+
     }
 }
