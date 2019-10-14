@@ -81,6 +81,59 @@ public class ShopActivity extends AppCompatActivity {
     public void buyItem(int index){
         if (items.length > index){
             String url = getString(R.string.server_url) + "/api/shops/10/items/" + items[index]._id;
+            ArrayList<TextView> itemNames = new ArrayList<>();
+            TextView itemName1 = findViewById(R.id.itemName1);
+            TextView itemName2 = findViewById(R.id.itemName2);
+            TextView itemName3 = findViewById(R.id.itemName3);
+            TextView itemName4 = findViewById(R.id.itemName4);
+            TextView itemName5 = findViewById(R.id.itemName5);
+
+            itemNames.add(itemName1);
+            itemNames.add(itemName2);
+            itemNames.add(itemName3);
+            itemNames.add(itemName4);
+            itemNames.add(itemName5);
+
+            ArrayList<TextView> itemDefenses = new ArrayList<>();
+            TextView itemDefense1 = findViewById(R.id.itemDefense1);
+            TextView itemDefense2 = findViewById(R.id.itemDefense2);
+            TextView itemDefense3 = findViewById(R.id.itemDefense3);
+            TextView itemDefense4 = findViewById(R.id.itemDefense4);
+            TextView itemDefense5 = findViewById(R.id.itemDefense5);
+
+            itemDefenses.add(itemDefense1);
+            itemDefenses.add(itemDefense2);
+            itemDefenses.add(itemDefense3);
+            itemDefenses.add(itemDefense4);
+            itemDefenses.add(itemDefense5);
+
+            ArrayList<TextView> itemAttacks = new ArrayList<>();
+            TextView itemAttack1 = findViewById(R.id.itemAttack1);
+            TextView itemAttack2 = findViewById(R.id.itemAttack2);
+            TextView itemAttack3 = findViewById(R.id.itemAttack3);
+            TextView itemAttack4 = findViewById(R.id.itemAttack4);
+            TextView itemAttack5 = findViewById(R.id.itemAttack5);
+            itemAttacks.add(itemAttack1);
+            itemAttacks.add(itemAttack2);
+            itemAttacks.add(itemAttack3);
+            itemAttacks.add(itemAttack4);
+            itemAttacks.add(itemAttack5);
+
+            ArrayList<TextView> itemPrices = new ArrayList<>();
+            TextView itemPrice1 = findViewById(R.id.itemPrice1);
+            TextView itemPrice2 = findViewById(R.id.itemPrice2);
+            TextView itemPrice3 = findViewById(R.id.itemPrice3);
+            TextView itemPrice4 = findViewById(R.id.itemPrice4);
+            TextView itemPrice5 = findViewById(R.id.itemPrice5);
+            itemPrices.add(itemPrice1);
+            itemPrices.add(itemPrice2);
+            itemPrices.add(itemPrice3);
+            itemPrices.add(itemPrice4);
+            itemPrices.add(itemPrice5);
+            itemNames.get(index).setText("out of Stock");
+            itemAttacks.get(index).setText("n/a");
+            itemDefenses.get(index).setText("n/a");
+            itemPrices.get(index).setText("n/a");
 
             RequestQueue queue = Volley.newRequestQueue(this);
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -100,6 +153,9 @@ public class ShopActivity extends AppCompatActivity {
                             } catch (JSONException e) {
                                 Log.e(this.getClass().toString(), e.getMessage());
                             }
+
+
+
 
 
 
@@ -180,6 +236,7 @@ public class ShopActivity extends AppCompatActivity {
                         itemPrices.add(itemPrice3);
                         itemPrices.add(itemPrice4);
                         itemPrices.add(itemPrice5);
+
 
 
 
