@@ -70,16 +70,28 @@ public class SecondActivity extends AppCompatActivity {
 
 
            //-----Update Player and Boss---------//
-            player.health = player.health - boss.damage;
-            boss.health = boss.health - (player.damage+500);
 
-            if(boss.health == 0 || boss.health < 0){
+            boss.health = boss.health - (player.damage+200);
+            player.health = player.health - boss.damage;
+
+            if((boss.health == 0 || boss.health < 0) && (player.health == 0||player.health < 0)){
+                String victory = "You Won";
+                win.setText(victory);
+                boss.health = 0;
+                player.health = 0;
+                deleteBoss();
+
+            }
+
+            else if(boss.health == 0 || boss.health < 0){
                String victory = "You Won";
                 win.setText(victory);
                 boss.health = 0;
                 deleteBoss();
 
             }
+
+
             else if (player.health == 0 || player.health< 0) {
                 win.setText("You Lost");
                 player.health = 0;
@@ -206,7 +218,7 @@ public class SecondActivity extends AppCompatActivity {
         }
 
         public void deleteBoss(){
-            String url = getString(R.string.server_url) + "/api/bosses/5da1c38859f1d74e1087b979";
+            String url = getString(R.string.server_url) + "/api/bosses/" + bosses[0]._id;
 
             RequestQueue queue = Volley.newRequestQueue(this);
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
