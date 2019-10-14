@@ -71,7 +71,7 @@ public class SecondActivity extends AppCompatActivity {
 
            //-----Update Player and Boss---------//
 
-            boss.health = boss.health - (player.damage+200);
+            boss.health = boss.health - (player.damage+500);
             player.health = player.health - boss.damage;
 
             if((boss.health == 0 || boss.health < 0) && (player.health == 0||player.health < 0)){
