@@ -23,9 +23,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import se.chalmers.cse.dit341.group00.model.Item;
+import se.chalmers.cse.dit341.group00.model.Player;
 
 public class ShopActivity extends AppCompatActivity {
     Item[] items;
+    Player[] players;
+    int shopLength;
 
 
 
@@ -38,6 +41,7 @@ public class ShopActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.HTTP_PARAM);
         getItems();
+        getPlayer();
 
         Button buyBtn1 = findViewById(R.id.buy_btn1);
         buyBtn1.setOnClickListener(new View.OnClickListener(){
@@ -78,9 +82,115 @@ public class ShopActivity extends AppCompatActivity {
 
 
     }
+    public void postGoldenMop(){
+        if (shopLength == 0) {
+            String url = getString(R.string.server_url) + "/api/shops/10/items";
+            RequestQueue queue = Volley.newRequestQueue(this);
+
+            try {
+                JSONObject postParams = new JSONObject();
+                postParams.put("name", "Golden Mop");
+                postParams.put("attackValue", "400");
+                postParams.put("defenseValue", "100");
+                postParams.put("price", "500");
+
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.POST, url, postParams, new Response.Listener<JSONObject>() {
+
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                                Gson gson = new Gson();
+
+                                String dataArray = null;
+
+                                try {
+                                    dataArray = response.getString("items");
+
+                                } catch (JSONException e) {
+                                    Log.e(this.getClass().toString(), e.getMessage());
+                                }
+
+
+                            }
+                        }, new Response.ErrorListener() {
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        }
+                        );
+
+                // The request queue makes sure that HTTP requests are processed in the right order.
+                queue.add(jsonObjectRequest);
+            } catch (JSONException err) {
+                System.out.println(err);
+            }
+        }
+
+    }
     public void buyItem(int index){
-        if (items.length > index){
+        if (items.length > index && players[0].currency >= items[index].price){
+            patchPlayer(index);
             String url = getString(R.string.server_url) + "/api/shops/10/items/" + items[index]._id;
+            ArrayList<TextView> itemNames = new ArrayList<>();
+            TextView itemName1 = findViewById(R.id.itemName1);
+            TextView itemName2 = findViewById(R.id.itemName2);
+            TextView itemName3 = findViewById(R.id.itemName3);
+            TextView itemName4 = findViewById(R.id.itemName4);
+            TextView itemName5 = findViewById(R.id.itemName5);
+
+            itemNames.add(itemName1);
+            itemNames.add(itemName2);
+            itemNames.add(itemName3);
+            itemNames.add(itemName4);
+            itemNames.add(itemName5);
+
+            ArrayList<TextView> itemDefenses = new ArrayList<>();
+            TextView itemDefense1 = findViewById(R.id.itemDefense1);
+            TextView itemDefense2 = findViewById(R.id.itemDefense2);
+            TextView itemDefense3 = findViewById(R.id.itemDefense3);
+            TextView itemDefense4 = findViewById(R.id.itemDefense4);
+            TextView itemDefense5 = findViewById(R.id.itemDefense5);
+
+            itemDefenses.add(itemDefense1);
+            itemDefenses.add(itemDefense2);
+            itemDefenses.add(itemDefense3);
+            itemDefenses.add(itemDefense4);
+            itemDefenses.add(itemDefense5);
+
+            ArrayList<TextView> itemAttacks = new ArrayList<>();
+            TextView itemAttack1 = findViewById(R.id.itemAttack1);
+            TextView itemAttack2 = findViewById(R.id.itemAttack2);
+            TextView itemAttack3 = findViewById(R.id.itemAttack3);
+            TextView itemAttack4 = findViewById(R.id.itemAttack4);
+            TextView itemAttack5 = findViewById(R.id.itemAttack5);
+            itemAttacks.add(itemAttack1);
+            itemAttacks.add(itemAttack2);
+            itemAttacks.add(itemAttack3);
+            itemAttacks.add(itemAttack4);
+            itemAttacks.add(itemAttack5);
+
+            ArrayList<TextView> itemPrices = new ArrayList<>();
+            TextView itemPrice1 = findViewById(R.id.itemPrice1);
+            TextView itemPrice2 = findViewById(R.id.itemPrice2);
+            TextView itemPrice3 = findViewById(R.id.itemPrice3);
+            TextView itemPrice4 = findViewById(R.id.itemPrice4);
+            TextView itemPrice5 = findViewById(R.id.itemPrice5);
+            itemPrices.add(itemPrice1);
+            itemPrices.add(itemPrice2);
+            itemPrices.add(itemPrice3);
+            itemPrices.add(itemPrice4);
+            itemPrices.add(itemPrice5);
+            itemNames.get(index).setText("out of Stock");
+            itemAttacks.get(index).setText("n/a");
+            itemDefenses.get(index).setText("n/a");
+            itemPrices.get(index).setText("n/a");
+
+            shopLength--;
+            postGoldenMop();
 
             RequestQueue queue = Volley.newRequestQueue(this);
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -103,6 +213,7 @@ public class ShopActivity extends AppCompatActivity {
 
 
 
+
                         }
                     }, new Response.ErrorListener() {
 
@@ -115,6 +226,93 @@ public class ShopActivity extends AppCompatActivity {
             queue.add(jsonObjectRequest);
         }
 
+    }
+    public void patchPlayer(int index){
+
+        players[0].currency -= items[index].price;
+        players[0].damage += items[index].attackValue;
+        players[0].defense += items[index].defenseValue;
+
+
+        String url = getString(R.string.server_url) + "/api/players/1";
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        try {
+            JSONObject postParams = new JSONObject();
+            postParams.put("currency", players[0].currency);
+            postParams.put("damage", players[0].damage);
+            postParams.put("defense", players[0].defense);
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.PATCH, url, postParams, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                        Gson gson = new Gson();
+
+                        String dataArray = null;
+
+                        try {
+                            dataArray = response.getString("items");
+
+                        } catch (JSONException e) {
+                            Log.e(this.getClass().toString(), e.getMessage());
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+                );
+
+        // The request queue makes sure that HTTP requests are processed in the right order.
+        queue.add(jsonObjectRequest);
+        } catch (JSONException err){
+            System.out.println(err);
+        }
+    }
+    public void getPlayer(){
+        String url = getString(R.string.server_url) + "/api/players";
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                        Gson gson = new Gson();
+
+                        String dataArray = null;
+
+
+                        try {
+                            dataArray = response.getString("players");
+
+                        } catch (JSONException e) {
+                            Log.e(this.getClass().toString(), e.getMessage());
+                        }
+
+
+                        players = gson.fromJson(dataArray, Player[].class);
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+        // The request queue makes sure that HTTP requests are processed in the right order.
+        queue.add(jsonObjectRequest);
     }
     public void getItems(){
         String url = getString(R.string.server_url) + "/api/shops/10";
@@ -183,6 +381,7 @@ public class ShopActivity extends AppCompatActivity {
 
 
 
+
                         try {
                             dataArray = response.getString("items");
 
@@ -199,6 +398,7 @@ public class ShopActivity extends AppCompatActivity {
                             itemAttacks.get(i).setText(String.valueOf(items[i].attackValue));
                             itemPrices.get(i).setText(String.valueOf(items[i].price));
                         }
+                        shopLength = items.length;
 
 
                     }
