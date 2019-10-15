@@ -20,6 +20,9 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import se.chalmers.cse.dit341.group00.model.Boss;
 import se.chalmers.cse.dit341.group00.model.Player;
 
@@ -71,8 +74,8 @@ public class SecondActivity extends AppCompatActivity {
 
            //-----Update Player and Boss---------//
 
-            boss.health = boss.health - (player.damage+500);
-            player.health = player.health - boss.damage;
+            boss.health = boss.health - (player.damage+200);
+            player.health = player.health - (boss.damage);
 
             if((boss.health == 0 || boss.health < 0) && (player.health == 0||player.health < 0)){
                 String victory = "You Won";
@@ -95,6 +98,7 @@ public class SecondActivity extends AppCompatActivity {
             else if (player.health == 0 || player.health< 0) {
                 win.setText("You Lost");
                 player.health = 0;
+                patchPlayer();
             }
 
 
@@ -257,6 +261,7 @@ public class SecondActivity extends AppCompatActivity {
             queue.add(jsonObjectRequest);
         }
 
+
     public void setPlayerImage (int damage){
 
         ImageView img = findViewById(R.id.imageView);
@@ -265,8 +270,10 @@ public class SecondActivity extends AppCompatActivity {
             img.setImageResource(R.drawable.janitor2);
         }
 
+
     }
 }
+
 
 
 
