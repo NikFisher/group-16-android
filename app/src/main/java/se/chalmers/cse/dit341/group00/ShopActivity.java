@@ -23,9 +23,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import se.chalmers.cse.dit341.group00.model.Item;
+import se.chalmers.cse.dit341.group00.model.Player;
 
 public class ShopActivity extends AppCompatActivity {
     Item[] items;
+    Player[] players;
+    int shopLength;
 
 
 
@@ -38,6 +41,7 @@ public class ShopActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.HTTP_PARAM);
         getItems();
+        getPlayer();
 
         Button buyBtn1 = findViewById(R.id.buy_btn1);
         buyBtn1.setOnClickListener(new View.OnClickListener(){
@@ -78,8 +82,58 @@ public class ShopActivity extends AppCompatActivity {
 
 
     }
+    public void postGoldenMop(){
+        if (shopLength == 0) {
+            String url = getString(R.string.server_url) + "/api/shops/10/items";
+            RequestQueue queue = Volley.newRequestQueue(this);
+
+            try {
+                JSONObject postParams = new JSONObject();
+                postParams.put("name", "Golden Mop");
+                postParams.put("attackValue", "400");
+                postParams.put("defenseValue", "100");
+                postParams.put("price", "500");
+
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.POST, url, postParams, new Response.Listener<JSONObject>() {
+
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                                Gson gson = new Gson();
+
+                                String dataArray = null;
+
+                                try {
+                                    dataArray = response.getString("items");
+
+                                } catch (JSONException e) {
+                                    Log.e(this.getClass().toString(), e.getMessage());
+                                }
+
+
+                            }
+                        }, new Response.ErrorListener() {
+
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        }
+                        );
+
+                // The request queue makes sure that HTTP requests are processed in the right order.
+                queue.add(jsonObjectRequest);
+            } catch (JSONException err) {
+                System.out.println(err);
+            }
+        }
+
+    }
     public void buyItem(int index){
-        if (items.length > index){
+        if (items.length > index && players[0].currency >= items[index].price){
+            patchPlayer(index);
             String url = getString(R.string.server_url) + "/api/shops/10/items/" + items[index]._id;
             ArrayList<TextView> itemNames = new ArrayList<>();
             TextView itemName1 = findViewById(R.id.itemName1);
@@ -135,6 +189,9 @@ public class ShopActivity extends AppCompatActivity {
             itemDefenses.get(index).setText("n/a");
             itemPrices.get(index).setText("n/a");
 
+            shopLength--;
+            postGoldenMop();
+
             RequestQueue queue = Volley.newRequestQueue(this);
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                     (Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
@@ -157,8 +214,6 @@ public class ShopActivity extends AppCompatActivity {
 
 
 
-
-
                         }
                     }, new Response.ErrorListener() {
 
@@ -171,6 +226,93 @@ public class ShopActivity extends AppCompatActivity {
             queue.add(jsonObjectRequest);
         }
 
+    }
+    public void patchPlayer(int index){
+
+        players[0].currency -= items[index].price;
+        players[0].damage += items[index].attackValue;
+        players[0].defense += items[index].defenseValue;
+
+
+        String url = getString(R.string.server_url) + "/api/players/1";
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        try {
+            JSONObject postParams = new JSONObject();
+            postParams.put("currency", players[0].currency);
+            postParams.put("damage", players[0].damage);
+            postParams.put("defense", players[0].defense);
+
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.PATCH, url, postParams, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                        Gson gson = new Gson();
+
+                        String dataArray = null;
+
+                        try {
+                            dataArray = response.getString("items");
+
+                        } catch (JSONException e) {
+                            Log.e(this.getClass().toString(), e.getMessage());
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+                );
+
+        // The request queue makes sure that HTTP requests are processed in the right order.
+        queue.add(jsonObjectRequest);
+        } catch (JSONException err){
+            System.out.println(err);
+        }
+    }
+    public void getPlayer(){
+        String url = getString(R.string.server_url) + "/api/players";
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                        Gson gson = new Gson();
+
+                        String dataArray = null;
+
+
+                        try {
+                            dataArray = response.getString("players");
+
+                        } catch (JSONException e) {
+                            Log.e(this.getClass().toString(), e.getMessage());
+                        }
+
+
+                        players = gson.fromJson(dataArray, Player[].class);
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+        // The request queue makes sure that HTTP requests are processed in the right order.
+        queue.add(jsonObjectRequest);
     }
     public void getItems(){
         String url = getString(R.string.server_url) + "/api/shops/10";
@@ -256,6 +398,7 @@ public class ShopActivity extends AppCompatActivity {
                             itemAttacks.get(i).setText(String.valueOf(items[i].attackValue));
                             itemPrices.get(i).setText(String.valueOf(items[i].price));
                         }
+                        shopLength = items.length;
 
 
                     }
