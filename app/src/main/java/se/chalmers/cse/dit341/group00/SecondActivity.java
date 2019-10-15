@@ -20,6 +20,9 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import se.chalmers.cse.dit341.group00.model.Boss;
 import se.chalmers.cse.dit341.group00.model.Player;
 
@@ -71,8 +74,8 @@ public class SecondActivity extends AppCompatActivity {
 
            //-----Update Player and Boss---------//
 
-            boss.health = boss.health - (player.damage+500);
-            player.health = player.health - boss.damage;
+            boss.health = boss.health - (player.damage+200);
+            player.health = player.health - (boss.damage);
 
             if((boss.health == 0 || boss.health < 0) && (player.health == 0||player.health < 0)){
                 String victory = "You Won";
@@ -95,6 +98,7 @@ public class SecondActivity extends AppCompatActivity {
             else if (player.health == 0 || player.health< 0) {
                 win.setText("You Lost");
                 player.health = 0;
+                patchPlayer();
             }
 
 
@@ -254,7 +258,62 @@ public class SecondActivity extends AppCompatActivity {
             // The request queue makes sure that HTTP requests are processed in the right order.
             queue.add(jsonObjectRequest);
         }
+
+        public void patchPlayer(){
+            String url = getString(R.string.server_url) + "/api/players/1";
+
+            RequestQueue queue = Volley.newRequestQueue(this);
+
+            try {
+                JSONObject postParams = new JSONObject();
+                postParams.put("health", "0");
+
+
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                        (Request.Method.PATCH, url, postParams, new Response.Listener<JSONObject>() {
+
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                                Gson gson = new Gson();
+
+                                String dataArray = null;
+
+                                try {
+                                    dataArray = response.getString("items");
+
+                                } catch (JSONException e) {
+                                    Log.e(this.getClass().toString(), e.getMessage());
+                                }
+
+
+                            Player[] players = gson.fromJson(dataArray, Player[].class);
+
+
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+
+                    }
+                    );
+
+
+
+            // The request queue makes sure that HTTP requests are processed in the right order.
+            queue.add(jsonObjectRequest);
+        } catch (JSONException err) {
+        System.out.println(err);
+    }
+
+    }
 }
+
 
 
 
