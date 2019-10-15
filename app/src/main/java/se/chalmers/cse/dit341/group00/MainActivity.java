@@ -1,12 +1,11 @@
 package se.chalmers.cse.dit341.group00;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,9 +22,11 @@ import org.json.JSONObject;
 
 import se.chalmers.cse.dit341.group00.model.Player;
 
+
 public class MainActivity extends AppCompatActivity {
 
     // Field for parameter name
+    public Player[] players;
     public static final String HTTP_PARAM = "httpResponse";
     private View view;
 
@@ -33,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ImageView myPlayerImage = (ImageView) findViewById(R.id.playerImageView);
-        myPlayerImage.setImageResource(R.drawable.janitor);
+       /* ImageView myPlayerImage = (ImageView) findViewById(R.id.playerImageView);
+        myPlayerImage.setImageResource(R.drawable.janitor);*/
         setPlayerInfo();
 
         //button to go to battlefield
@@ -94,13 +95,15 @@ public class MainActivity extends AppCompatActivity {
                         }
 
 
-                        Player[] players = gson.fromJson(dataArray, Player[].class);
+                        players = gson.fromJson(dataArray, Player[].class);
 
                         myPlayerName.setText(players[0].name);
                         myPlayerDefense.setText(Integer.toString(players[0].defense));
                         myPlayerHealth.setText(Integer.toString(players[0].health));
                         myPlayerDamage.setText(Integer.toString(players[0].damage));
                         myPlayerCurrency.setText(Integer.toString(players[0].currency));
+                        setPlayerImage(players[0].damage);
+
                     }
                 }, new Response.ErrorListener() {
 
@@ -113,17 +116,28 @@ public class MainActivity extends AppCompatActivity {
                         myPlayerCurrency.setText("Error!" + error.toString());
                     }
                 });
+
         // The request queue makes sure that HTTP requests are processed in the right order.
         queue.add(jsonObjectRequest);
+
+    }
+
+    public void setPlayerImage (int damage){
+
+        ImageView img = findViewById(R.id.playerImageView);
+
+        if(damage >= 500){
+            img.setImageResource(R.drawable.janitor2);
+        }else{
+            img.setImageResource(R.drawable.janitor);
+        }
+
     }
 
     public void launchTaskActivity (View view){
 
-        TextView myPlayerCurrency = findViewById(R.id.playerCurrencyTextView);
         Intent intent = new Intent(this, TaskActivity.class);
-        intent.putExtra(HTTP_PARAM, myPlayerCurrency.getText().toString());
         startActivity(intent);
-
 
     }
 }

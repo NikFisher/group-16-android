@@ -1,11 +1,9 @@
 package se.chalmers.cse.dit341.group00;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -21,18 +19,104 @@ import org.json.JSONObject;
 
 import se.chalmers.cse.dit341.group00.model.Player;
 
-
 public class TaskActivity extends AppCompatActivity {
+
+    Player[] players;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task);
 
-        Intent intent = getIntent();
-        String currency = intent.getStringExtra(MainActivity.HTTP_PARAM);
+        setPlayers();
 
-        TextView text = findViewById(R.id.playerCurrency);
-        text.setText(currency);
     }
+
+    public void setPlayers() {
+
+        final TextView myPlayerCurrency = findViewById(R.id.playerCurrency);
+
+        String url = getString(R.string.server_url) + "/api/players";
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                        Gson gson = new Gson();
+
+                        String dataArray = null;
+
+
+                        try {
+                            dataArray = response.getString("players");
+
+                        } catch (JSONException e) {
+                            Log.e(this.getClass().toString(), e.getMessage());
+                        }
+
+
+                        players = gson.fromJson(dataArray, Player[].class);
+
+                        myPlayerCurrency.setText(Integer.toString(players[0].currency));
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                       myPlayerCurrency.setText("Error!" + error.toString());
+                    }
+                });
+        // The request queue makes sure that HTTP requests are processed in the right order.
+        queue.add(jsonObjectRequest);
+    }
+
+    public void moreBtnClicked(View view) {
+        final TextView myPlayerCurrency = findViewById(R.id.playerCurrency);
+        players[0].currency += 20;
+
+        String url = getString(R.string.server_url) + "/api/players/1";
+        RequestQueue queue = Volley.newRequestQueue(this);
+        try{
+            JSONObject postParams = new JSONObject();
+            postParams.put("currency", players[0].currency);
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.PATCH, url, postParams, new Response.Listener<JSONObject>(){
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                            Gson gson = new Gson();
+
+                            String dataArray = null;
+
+                            try {
+                                dataArray = response.getString("players");
+
+                            } catch (JSONException e) {
+                                Log.e(this.getClass().toString(), e.getMessage());
+                            }
+
+
+                        }
+                    },new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    }
+                    );
+            // The request queue makes sure that HTTP requests are processed in the right order.
+            queue.add(jsonObjectRequest);
+        } catch (JSONException err){
+            System.out.println(err);
+        }
+
+        myPlayerCurrency.setText(Integer.toString(players[0].currency));
+    }
+
 }
+
+

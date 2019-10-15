@@ -143,6 +143,8 @@ public class SecondActivity extends AppCompatActivity {
 
                             playerHealth.setText(Integer.toString(players[0].health));
 
+                            setPlayerImage(players[0].damage);
+
 
                         }
                     }, new Response.ErrorListener() {
@@ -254,6 +256,16 @@ public class SecondActivity extends AppCompatActivity {
             // The request queue makes sure that HTTP requests are processed in the right order.
             queue.add(jsonObjectRequest);
         }
+
+    public void setPlayerImage (int damage){
+
+        ImageView img = findViewById(R.id.imageView);
+
+        if(damage >= 500){
+            img.setImageResource(R.drawable.janitor2);
+        }
+
+    }
 }
 
 
