@@ -147,6 +147,8 @@ public class SecondActivity extends AppCompatActivity {
 
                             playerHealth.setText(Integer.toString(players[0].health));
 
+                            setPlayerImage(players[0].damage);
+
 
                         }
                     }, new Response.ErrorListener() {
@@ -259,57 +261,15 @@ public class SecondActivity extends AppCompatActivity {
             queue.add(jsonObjectRequest);
         }
 
-        public void patchPlayer(){
-            String url = getString(R.string.server_url) + "/api/players/1";
 
-            RequestQueue queue = Volley.newRequestQueue(this);
+    public void setPlayerImage (int damage){
 
-            try {
-                JSONObject postParams = new JSONObject();
-                postParams.put("health", "0");
+        ImageView img = findViewById(R.id.imageView);
 
+        if(damage >= 500){
+            img.setImageResource(R.drawable.janitor2);
+        }
 
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                        (Request.Method.PATCH, url, postParams, new Response.Listener<JSONObject>() {
-
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
-                                Gson gson = new Gson();
-
-                                String dataArray = null;
-
-                                try {
-                                    dataArray = response.getString("items");
-
-                                } catch (JSONException e) {
-                                    Log.e(this.getClass().toString(), e.getMessage());
-                                }
-
-
-                            Player[] players = gson.fromJson(dataArray, Player[].class);
-
-
-
-
-                        }
-                    }, new Response.ErrorListener() {
-
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-
-                        }
-
-                    }
-                    );
-
-
-
-            // The request queue makes sure that HTTP requests are processed in the right order.
-            queue.add(jsonObjectRequest);
-        } catch (JSONException err) {
-        System.out.println(err);
-    }
 
     }
 }
