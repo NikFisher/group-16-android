@@ -11,8 +11,7 @@ public class Boss {
         this.health = num;
     }
 
-    public Boss(int health, int damage){
-        this.health = health;
-        this.damage = damage;
+    public Boss(){
+
     }
 }
