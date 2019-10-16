@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
        /* ImageView myPlayerImage = (ImageView) findViewById(R.id.playerImageView);
         myPlayerImage.setImageResource(R.drawable.janitor);*/
         setPlayerInfo();
