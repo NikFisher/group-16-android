@@ -16,9 +16,8 @@ public class Player {
         return this.health;
     }
 
-    public Player( int health,int damage){
-        this.health = health;
-        this.damage = damage;
+    public Player(){
+
 
     }
 }

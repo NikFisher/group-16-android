@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Field for parameter name
     public Player[] players;
+    public Boss [] bosses;
+
 
     public static final String HTTP_PARAM = "httpResponse";
     private View view;

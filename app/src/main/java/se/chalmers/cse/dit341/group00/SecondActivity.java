@@ -35,12 +35,6 @@ public class SecondActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-
-
-            setPlayer();
-            setBoss();
-
-
             setPlayer();
             setBoss();
 
@@ -79,8 +73,8 @@ public class SecondActivity extends AppCompatActivity {
 
         //-----Update Player and Boss---------//
 
-        boss.health = boss.health - (player.damage );
-        player.health = player.health - (boss.damage+100);
+        boss.health = boss.health - (player.damage +1000 );
+        player.health = player.health - (boss.damage);
 
         if ((boss.health == 0 || boss.health < 0) && (player.health == 0 || player.health < 0)) {
             player.health = player.health + boss.damage;
@@ -194,21 +188,21 @@ public class SecondActivity extends AppCompatActivity {
 
                         bosses = gson.fromJson(dataArray, Boss[].class);
 
+                        if (bosses.length!=0) {
+                            bossHealth.setText(String.valueOf(bosses[0].health));
 
-                        bossHealth.setText(Integer.toString(bosses[0].health));
 
-
-                        if (bosses[0].health == 300) {
-                            bossImage.setImageResource(R.drawable.bacteria);
-                            bossName.setText(bosses[0].name);
-                        } else if (bosses[0].health == 200) {
-                            bossImage.setImageResource(R.drawable.garbage_man);
-                            bossName.setText(bosses[0].name);
-                        } else if (bosses[0].health == 400) {
-                            bossImage.setImageResource(R.drawable.building);
-                            bossName.setText(bosses[0].name);
+                            if (bosses[0].health == 300) {
+                                bossImage.setImageResource(R.drawable.bacteria);
+                                bossName.setText(bosses[0].name);
+                            } else if (bosses[0].health == 200) {
+                                bossImage.setImageResource(R.drawable.garbage_man);
+                                bossName.setText(bosses[0].name);
+                            } else if (bosses[0].health == 400) {
+                                bossImage.setImageResource(R.drawable.building);
+                                bossName.setText(bosses[0].name);
+                            }
                         }
-
                     }
                 }, new Response.ErrorListener() {
 
