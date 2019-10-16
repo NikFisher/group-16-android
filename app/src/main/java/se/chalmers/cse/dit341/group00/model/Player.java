@@ -12,6 +12,10 @@ public class Player {
     public void setHealth(int num) {
         this.health = num;
     }
+    public int getHealth(){
+        return this.health;
+    }
+
     public Player( int health,int damage){
         this.health = health;
         this.damage = damage;

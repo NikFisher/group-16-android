@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import se.chalmers.cse.dit341.group00.model.Boss;
 import se.chalmers.cse.dit341.group00.model.Player;
 
 
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Field for parameter name
     public Player[] players;
+
     public static final String HTTP_PARAM = "httpResponse";
     private View view;
 
@@ -40,10 +42,24 @@ public class MainActivity extends AppCompatActivity {
 
         //button to go to battlefield
         Button bossButton = (Button) findViewById(R.id.boss_btn);
+
         bossButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 openBattlefield();
+            }
+        });
+
+        Button ressButton = (Button) findViewById(R.id.ressurect_btn);
+
+
+        ressButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ressurectPlayer();
+
             }
         });
 
@@ -63,12 +79,31 @@ public class MainActivity extends AppCompatActivity {
             Intent shopIntent = new Intent(this, ShopActivity.class);
             startActivity(shopIntent);
         }
+        public void ressurectPlayer(){
+            TextView ressText = findViewById(R.id.textView9);
+            Button ressButton = (Button) findViewById(R.id.ressurect_btn);
+            if (players[0].health == 100){
+                ressText.setText("You're already at full health");
+                ressButton.setEnabled(false);
+            }
+            else {
+                patchPlayer(100, false);
+                players[0].health = 100;
+                players[0].dead = false;
+                TextView myPlayerHealth = findViewById(R.id.playerHealthTextView);
+                myPlayerHealth.setText(Integer.toString(players[0].health));
+
+                ressButton.setEnabled(false);
+
+                ressText.setText("You have been brought back to life");
+            }
+        }
 
 
 
     public void setPlayerInfo (){
         final TextView myPlayerName = findViewById(R.id.playerNameTextView);
-        final TextView myPlayerHealth = findViewById(R.id.playerHealthTextView);
+        TextView myPlayerHealth = findViewById(R.id.playerHealthTextView);
         final TextView myPlayerDamage = findViewById(R.id.playerDamageTextView);
         final TextView myPlayerDefense = findViewById(R.id.playerDefenseTextView);
         final TextView myPlayerCurrency = findViewById(R.id.playerCurrencyTextView);
@@ -138,6 +173,57 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, TaskActivity.class);
         startActivity(intent);
+
+    }
+    public void patchPlayer(int health, boolean dead) {
+        String url = getString(R.string.server_url) + "/api/players/1";
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        try {
+            JSONObject postParams = new JSONObject();
+            postParams.put("health", Integer.toString(health));
+            postParams.put("dead", Boolean.toString(dead));
+
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.PATCH, url, postParams, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                            Gson gson = new Gson();
+
+                            String dataArray = null;
+
+                            try {
+                                dataArray = response.getString("items");
+
+                            } catch (JSONException e) {
+                                Log.e(this.getClass().toString(), e.getMessage());
+                            }
+
+
+                            Player[] players = gson.fromJson(dataArray, Player[].class);
+
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+
+                    }
+                    );
+
+
+            // The request queue makes sure that HTTP requests are processed in the right order.
+            queue.add(jsonObjectRequest);
+        } catch (JSONException err) {
+            System.out.println(err);
+        }
 
     }
 }
