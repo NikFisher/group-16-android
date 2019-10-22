@@ -570,7 +570,6 @@ public class MainActivity extends AppCompatActivity{
     }
 
     public void putPlayer(){
-        TextView myPlayerName = findViewById(R.id.playerNameTextView);
         TextView myPlayerHealth = findViewById(R.id.playerHealthTextView);
         TextView myPlayerDamage = findViewById(R.id.playerDamageTextView);
         TextView myPlayerDefense = findViewById(R.id.playerDefenseTextView);
@@ -618,6 +617,7 @@ public class MainActivity extends AppCompatActivity{
                             myPlayerHealth.setText(Integer.toString(players[0].health));
                             myPlayerDamage.setText(Integer.toString(players[0].damage));
                             myPlayerCurrency.setText(Integer.toString(players[0].currency));
+                            setPlayerImage(players[0].damage);
 
                         }
                     }, new Response.ErrorListener() {
@@ -799,17 +799,6 @@ public class MainActivity extends AppCompatActivity{
         postItemsToShop("15", "Standard Mop", item5Description,"attack",50,0, 100);
     }
 
-    /*
-     var item5 = {
-        name: 'hazmat suit',
-        description: 'A hazmat suit, also known as decontamination suit, ' +
-    'is a piece of personal protective equipment that consists of an impermeable ' +
-     'whole-body garment worn as protection against hazardous materials.',
-        type: 'defence',
-        attackValue: 50,
-        defenseValue: 0,
-        price: 100
-      } */
 
     public void resetBtnClicked(View view){
         deleteBosses();
