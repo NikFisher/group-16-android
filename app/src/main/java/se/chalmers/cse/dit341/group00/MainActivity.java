@@ -32,7 +32,7 @@ import se.chalmers.cse.dit341.group00.model.Player;
 import se.chalmers.cse.dit341.group00.model.Shop;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
     // Field for parameter name
 
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getPlayers();
 
         spinner = (Spinner)findViewById(R.id.spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
@@ -76,24 +77,12 @@ public class MainActivity extends AppCompatActivity{
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position >= 0) {
-                    setPlayerInfo(position);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+        spinner.setOnItemSelectedListener(this);
 
 
        /* ImageView myPlayerImage = (ImageView) findViewById(R.id.playerImageView);
         myPlayerImage.setImageResource(R.drawable.janitor);*/
-        getPlayers();
+
 
 
 
@@ -163,6 +152,7 @@ public class MainActivity extends AppCompatActivity{
 
 
         String url = getString(R.string.server_url) + "/api/players";
+        TextView errText = findViewById(R.id.textView16);
 
         RequestQueue queue = Volley.newRequestQueue(this);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -185,6 +175,7 @@ public class MainActivity extends AppCompatActivity{
 
 
                         players = gson.fromJson(dataArray, Player[].class);
+                        errText.setText("Mobile Edition");
 
 
                     }
@@ -192,7 +183,7 @@ public class MainActivity extends AppCompatActivity{
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        System.out.println(error);
+                        errText.setText("No Connection");
 
                     }
                 });
@@ -209,63 +200,61 @@ public class MainActivity extends AppCompatActivity{
         TextView myPlayerDefense = findViewById(R.id.playerDefenseTextView);
         TextView myPlayerCurrency = findViewById(R.id.playerCurrencyTextView);
 
-        try {
+        if(players != null) {
             String url = getString(R.string.server_url) + "/api/players/" + players[index]._id;
 
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            RequestQueue queue = Volley.newRequestQueue(this);
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
-                        Gson gson = new Gson();
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            // GSON allows to parse a JSON string/JSONObject directly into a user-defined class
+                            Gson gson = new Gson();
 
-                        String dataArray = null;
-                        String playerName = null;
-                        String playerHealth = null;
-                        String playerDamage = null;
-                        String playerDefense = null;
-                        String playerCurrency = null;
+                            String dataArray = null;
+                            String playerName = null;
+                            String playerHealth = null;
+                            String playerDamage = null;
+                            String playerDefense = null;
+                            String playerCurrency = null;
 
-                        try {
-                            dataArray = null;
-                            playerName = response.getString("name");
-                            playerHealth = response.getString("health");
-                            playerDamage = response.getString("damage");
-                            playerDefense = response.getString("defense");
-                            playerCurrency = response.getString("currency");
+                            try {
+                                dataArray = null;
+                                playerName = response.getString("name");
+                                playerHealth = response.getString("health");
+                                playerDamage = response.getString("damage");
+                                playerDefense = response.getString("defense");
+                                playerCurrency = response.getString("currency");
 
-                        } catch (JSONException e) {
-                            Log.e(this.getClass().toString(), e.getMessage());
+                            } catch (JSONException e) {
+                                Log.e(this.getClass().toString(), e.getMessage());
+                            }
+
+                            myPlayerName.setText(playerName);
+                            myPlayerHealth.setText(playerHealth);
+                            myPlayerDamage.setText(playerDamage);
+                            myPlayerDefense.setText(playerDefense);
+                            myPlayerCurrency.setText(playerCurrency);
+
+                            setPlayerImage(players[index].damage);
+
                         }
+                    }, new Response.ErrorListener() {
 
-                        myPlayerName.setText(playerName);
-                        myPlayerHealth.setText(playerHealth);
-                        myPlayerDamage.setText(playerDamage);
-                        myPlayerDefense.setText(playerDefense);
-                        myPlayerCurrency.setText(playerCurrency);
-
-                        setPlayerImage(players[index].damage);
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        myPlayerName.setText("Error!" + error.toString());
-                        myPlayerHealth.setText("Error!" + error.toString());
-                        myPlayerDamage.setText("Error!" + error.toString());
-                        myPlayerDefense.setText("Error!" + error.toString());
-                        myPlayerCurrency.setText("Error!" + error.toString());
-                    }
-                });
-        queue.add(jsonObjectRequest);
-        }catch(Exception err){
-            myPlayerName.setText("Server");
-            myPlayerHealth.setText("Offline");
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            myPlayerName.setText("Error!" + error.toString());
+                            myPlayerHealth.setText("Error!" + error.toString());
+                            myPlayerDamage.setText("Error!" + error.toString());
+                            myPlayerDefense.setText("Error!" + error.toString());
+                            myPlayerCurrency.setText("Error!" + error.toString());
+                        }
+                    });
+            queue.add(jsonObjectRequest);
         }
+
     }
 
     public void setPlayerImage (int damage){
@@ -812,4 +801,16 @@ public class MainActivity extends AppCompatActivity{
         deleteItems();
         putShop();
     }
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                setPlayerInfo(position);
+
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        setPlayerInfo(0);
+        }
+
 }
