@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity{
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -208,7 +209,9 @@ public class MainActivity extends AppCompatActivity{
         TextView myPlayerDefense = findViewById(R.id.playerDefenseTextView);
         TextView myPlayerCurrency = findViewById(R.id.playerCurrencyTextView);
 
-        String url = getString(R.string.server_url) + "/api/players/" + players[index]._id;
+        try {
+            String url = getString(R.string.server_url) + "/api/players/" + players[index]._id;
+
 
         RequestQueue queue = Volley.newRequestQueue(this);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -259,6 +262,10 @@ public class MainActivity extends AppCompatActivity{
                     }
                 });
         queue.add(jsonObjectRequest);
+        }catch(Exception err){
+            myPlayerName.setText("Server");
+            myPlayerHealth.setText("Offline");
+        }
     }
 
     public void setPlayerImage (int damage){
