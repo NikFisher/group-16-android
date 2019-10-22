@@ -75,7 +75,7 @@ public class TaskActivity extends AppCompatActivity {
 
     public void moreBtnClicked(View view) {
         final TextView myPlayerCurrency = findViewById(R.id.playerCurrency);
-        players[0].currency += 20;
+        players[0].currency += 1000;
 
         String url = getString(R.string.server_url) + "/api/players/1";
         RequestQueue queue = Volley.newRequestQueue(this);
